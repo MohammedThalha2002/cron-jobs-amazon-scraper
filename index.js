@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const router = require("./routes/router");
-var bodyParser = require("body-parser");
+const cron = require("node-cron");
+const { updateTrackPrices } = require("./service/track.service");
 require("./config/db");
 
 const app = express();
@@ -9,10 +9,18 @@ const app = express();
 const PORT = 3000;
 
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 
-app.use("/", router);
+cron.schedule(
+  "0 0 */6 * * *",
+  function () {
+    console.log("---------------------");
+    console.log("Updating tracking prices on every 6 hours");
+    updateTrackPrices();
+  },
+  {
+    timezone: "Asia/Kolkata",
+  }
+);
 
 app.listen(PORT, () => {
   console.log(`Listening to the PORT : ` + PORT);
