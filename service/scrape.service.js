@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const TrackModel = require("../model/TrackModel");
 const { default: axios } = require("axios");
+const UserModel = require("../model/UserModel");
 require("dotenv").config();
 
 async function scrape(details) {
@@ -63,9 +64,19 @@ async function updatePriceDetails(id, curr_price) {
 }
 
 async function notifyUser(body) {
+  // find user using email
+  let email = body.email;
+
+  const user = await UserModel.find({
+    email: email,
+  });
+  console.log(user);
+  let userId = user.userId;
+  let token = user.token;
+
   axios
     .post(
-      "https://cliq.zoho.com/company/834928503/api/v2/bots/amazontracker/incoming?zapikey=1001.f60094bfff22038c6180d69b16c6cf4d.6d7ab047b74ed0c6d11373f4adbb9b6a",
+      `https://cliq.zoho.com/company/${userId}/api/v2/bots/amazontracker/incoming?zapikey=${token}`,
       body
     )
     .then((res) => res.send(res.data))
