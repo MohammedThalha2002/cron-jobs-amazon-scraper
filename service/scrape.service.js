@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const TrackModel = require("../model/TrackModel");
+const { default: axios } = require("axios");
 require("dotenv").config();
 
 async function scrape(details) {
@@ -35,6 +36,17 @@ async function findPrice(page, detail) {
   const price = parseInt(orgPriceStr);
   // update the price details in db
   updatePriceDetails(detail._id, price);
+  // check if the curr price is less than the expected price to notify the person
+  if (price < detail.exp_price) {
+    // notify the user on the price drop
+    const body = {
+      url: detail.url,
+      exp_price: detail.exp_price,
+      curr_price: price,
+      email: detail.email,
+    };
+    notifyUser(body);
+  }
 }
 
 async function updatePriceDetails(id, curr_price) {
@@ -48,6 +60,16 @@ async function updatePriceDetails(id, curr_price) {
   } catch (err) {
     console.log(err);
   }
+}
+
+async function notifyUser(body) {
+  axios
+    .post(
+      "https://cliq.zoho.com/company/834928503/api/v2/bots/amazontracker/incoming?zapikey=1001.f60094bfff22038c6180d69b16c6cf4d.6d7ab047b74ed0c6d11373f4adbb9b6a",
+      body
+    )
+    .then((res) => res.send(res.data))
+    .catch((err) => res.send(err));
 }
 
 module.exports = { scrape };
