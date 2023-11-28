@@ -1,17 +1,15 @@
 const express = require("express");
+require("./config/db");
 const cors = require("cors");
-const cron = require("node-cron");
 const { updateTrackPrices } = require("./service/track.service");
 const { default: axios } = require("axios");
 const UserModel = require("./model/UserModel");
-require("./config/db");
 
 const app = express();
 
 const PORT = 3000;
 
 app.use(cors());
-
 // cron.schedule(
 //   "0 */3 * * *",
 //   function () {
@@ -25,9 +23,13 @@ app.use(cors());
 //   }
 // );
 
-app.get("/start", async (req, res) => {
-  await updateTrackPrices();
-  res.send("scraped...");
+app.get("/start", (req, res) => {
+  try {
+    updateTrackPrices();
+    res.send("scraped");
+  } catch (error) {
+    res.send(error);
+  }
 });
 
 app.get("/bot-check", async (req, res) => {
