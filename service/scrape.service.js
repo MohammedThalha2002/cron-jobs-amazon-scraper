@@ -36,7 +36,10 @@ async function findPrice(page, detail) {
   const orgPriceStr = priceGet.replace(/,/g, "");
   const price = parseInt(orgPriceStr);
   // update the price details in db
-  updatePriceDetails(detail._id, price);
+  // dont update if same price exists
+  if(price != detail.curr_price){
+    await updatePriceDetails(detail._id, price);
+  }
   // check if the curr price is less than the expected price to notify the person
   if (price < detail.exp_price) {
     // notify the user on the price drop
@@ -57,7 +60,7 @@ async function updatePriceDetails(id, curr_price) {
         curr_price: curr_price,
       },
     });
-    console.log(curr_price, "updated successfully");
+    console.log(curr_price, "price updated successfully");
   } catch (err) {
     console.log(err);
   }

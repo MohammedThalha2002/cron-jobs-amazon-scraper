@@ -1,11 +1,9 @@
 const express = require("express");
+require("./config/db");
 const cors = require("cors");
-const cron = require("node-cron");
 const { updateTrackPrices } = require("./service/track.service");
-const { activateServer } = require("./service/activateServer.service");
 const { default: axios } = require("axios");
 const UserModel = require("./model/UserModel");
-require("./config/db");
 
 const app = express();
 
@@ -13,31 +11,9 @@ const PORT = 3000;
 
 app.use(cors());
 
-cron.schedule(
-  "0 */3 * * *",
-  function () {
-    console.log("---------------------");
-    console.log("Updating tracking prices on every 3 hours");
-    updateTrackPrices();
-  },
-  {
-    scheduled: true,
-    timezone: "Asia/Kolkata",
-  }
-);
-
-cron.schedule(
-  "0 */1 * * *",
-  function () {
-    console.log("---------------------");
-    console.log("Server Activating");
-    activateServer();
-  },
-  {
-    scheduled: true,
-    timezone: "Asia/Kolkata",
-  }
-);
+app.get("/start", (req,res) => {
+  updateTrackPrices();
+})
 
 app.get("/bot-check", async (req, res) => {
   const body = {
