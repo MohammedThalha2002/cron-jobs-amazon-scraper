@@ -34,7 +34,7 @@ async function findPrice(page, detail) {
   const priceGet = await page.$eval(tag, (el) => el.textContent);
   console.log(priceGet);
   const orgPriceStr = priceGet.replace(/,/g, "");
-  const price = parseInt(orgPriceStr);
+  let price = parseInt(orgPriceStr);
   // update the price details in db
   // dont update if same price exists
   if(price != detail.curr_price){
@@ -82,8 +82,8 @@ async function notifyUser(body) {
       `https://cliq.zoho.com/company/${userId}/api/v2/bots/amazontracker/incoming?zapikey=${token}`,
       body
     )
-    .then((res) => res.send(res.data))
-    .catch((err) => res.send(err));
+    .then((res) => console.log(res.data))
+    .catch((err) => console.log(err));
 }
 
 module.exports = { scrape };

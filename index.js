@@ -11,9 +11,14 @@ const PORT = 3000;
 
 app.use(cors());
 
-app.get("/start", (req,res) => {
-  updateTrackPrices();
-})
+app.get("/start", (req, res) => {
+  try {
+    updateTrackPrices();
+    res.send("scraped");
+  } catch (error) {
+    res.send(error);
+  }
+});
 
 app.get("/bot-check", async (req, res) => {
   const body = {
