@@ -31,25 +31,30 @@ async function findPrice(page, detail) {
   console.log(detail.url);
   await page.goto(detail.url);
   tag = ".a-price-whole";
-  const priceGet = await page.$eval(tag, (el) => el.textContent);
-  console.log(priceGet);
-  const orgPriceStr = priceGet.replace(/,/g, "");
-  let price = parseInt(orgPriceStr);
-  // update the price details in db
-  // dont update if same price exists
-  if(price != detail.curr_price){
-    await updatePriceDetails(detail._id, price);
-  }
-  // check if the curr price is less than the expected price to notify the person
-  if (price < detail.exp_price) {
-    // notify the user on the price drop
-    const body = {
-      url: detail.url,
-      exp_price: detail.exp_price,
-      curr_price: price,
-      email: detail.email,
-    };
-    notifyUser(body);
+
+  try {
+    const priceGet = await page.$eval(tag, (el) => el.textContent);
+    console.log(priceGet);
+    const orgPriceStr = priceGet.replace(/,/g, "");
+    let price = parseInt(orgPriceStr);
+    // update the price details in db
+    // dont update if same price exists
+    if (price != detail.curr_price) {
+      await updatePriceDetails(detail._id, price);
+    }
+    // check if the curr price is less than the expected price to notify the person
+    if (price < detail.exp_price) {
+      // notify the user on the price drop
+      const body = {
+        url: detail.url,
+        exp_price: detail.exp_price,
+        curr_price: price,
+        email: detail.email,
+      };
+      notifyUser(body);
+    }
+  } catch (error) {
+    console.log(error);
   }
 }
 
