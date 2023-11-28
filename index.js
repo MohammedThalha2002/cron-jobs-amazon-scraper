@@ -4,24 +4,25 @@ const cors = require("cors");
 const { updateTrackPrices } = require("./service/track.service");
 const { default: axios } = require("axios");
 const UserModel = require("./model/UserModel");
+const cron = require("node-cron");
 
 const app = express();
 
 const PORT = 3000;
 
 app.use(cors());
-// cron.schedule(
-//   "0 */3 * * *",
-//   function () {
-//     console.log("---------------------");
-//     console.log("Updating tracking prices on every 3 hours");
-//     updateTrackPrices();
-//   },
-//   {
-//     scheduled: true,
-//     timezone: "Asia/Kolkata",
-//   }
-// );
+cron.schedule(
+  "0 */1 * * *",
+  async function () {
+    console.log("---------------------");
+    console.log("Updating tracking prices on every 3 hours");
+    await updateTrackPrices();
+  },
+  {
+    scheduled: true,
+    timezone: "Asia/Kolkata",
+  }
+);
 
 app.get("/start", (req, res) => {
   try {

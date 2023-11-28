@@ -34,13 +34,15 @@ async function findPrice(page, detail) {
 
   try {
     const priceGet = await page.$eval(tag, (el) => el.textContent);
-    console.log(priceGet);
     const orgPriceStr = priceGet.replace(/,/g, "");
     let price = parseInt(orgPriceStr);
+    console.log("New price", price);
     // update the price details in db
     // dont update if same price exists
     if (price != detail.curr_price) {
       await updatePriceDetails(detail._id, price);
+    } else {
+      console.log("same price");
     }
     // check if the curr price is less than the expected price to notify the person
     if (price < detail.exp_price) {
@@ -79,8 +81,8 @@ async function notifyUser(body) {
     email: email,
   });
   console.log(user);
-  let userId = user.userId;
-  let token = user.token;
+  let userId = user[0].userId;
+  let token = user[0].token;
 
   axios
     .post(
@@ -88,7 +90,7 @@ async function notifyUser(body) {
       body
     )
     .then((res) => console.log(res.data))
-    .catch((err) => console.log(err));
+    .catch((err) => console.log(err?.response?.data));
 }
 
 module.exports = { scrape };
