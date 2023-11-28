@@ -45,9 +45,10 @@ async function findPrice(page, detail) {
       console.log("same price");
     }
     // check if the curr price is less than the expected price to notify the person
-    if (price < detail.exp_price) {
+    if (price <= detail.exp_price) {
       // notify the user on the price drop
       const body = {
+        id: detail._id,
         url: detail.url,
         exp_price: detail.exp_price,
         curr_price: price,
