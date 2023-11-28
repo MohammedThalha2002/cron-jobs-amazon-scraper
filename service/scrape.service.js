@@ -36,7 +36,9 @@ async function findPrice(page, detail) {
   const orgPriceStr = priceGet.replace(/,/g, "");
   const price = parseInt(orgPriceStr);
   // update the price details in db
-  updatePriceDetails(detail._id, price);
+  if (price != detail.curr_price) {
+    updatePriceDetails(detail._id, price);
+  }
   // check if the curr price is less than the expected price to notify the person
   if (price < detail.exp_price) {
     // notify the user on the price drop
