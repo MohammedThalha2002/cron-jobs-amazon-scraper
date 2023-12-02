@@ -5,34 +5,38 @@ const { updateTrackPrices } = require("./service/track.service");
 const { default: axios } = require("axios");
 const UserModel = require("./model/UserModel");
 const cron = require("node-cron");
+const router = require("./router/routes");
 
 const app = express();
 
 const PORT = 3000;
 
 app.use(cors());
+app.use(express.json());
 //
-cron.schedule(
-  "0 */1 * * *",
-  async function () {
-    console.log("---------------------");
-    console.log("Updating tracking prices on every 3 hours");
-    await updateTrackPrices();
-  },
-  {
-    scheduled: true,
-    timezone: "Asia/Kolkata",
-  }
-);
+// cron.schedule(
+//   "0 */1 * * *",
+//   async function () {
+//     console.log("---------------------");
+//     console.log("Updating tracking prices on every 3 hours");
+//     await updateTrackPrices();
+//   },
+//   {
+//     scheduled: true,
+//     timezone: "Asia/Kolkata",
+//   }
+// );
 
-app.get("/start", (req, res) => {
-  try {
-    updateTrackPrices();
-    res.send("scraped");
-  } catch (error) {
-    res.send(error);
-  }
-});
+app.use("/post", router);
+
+// app.get("/start", (req, res) => {
+//   try {
+//     updateTrackPrices();
+//     res.send("scraped");
+//   } catch (error) {
+//     res.send(error);
+//   }
+// });
 
 app.get("/bot-check", async (req, res) => {
   const body = {
@@ -42,22 +46,31 @@ app.get("/bot-check", async (req, res) => {
     email: "mohammedthalha2209@gmail.com",
   };
 
-  let email = body.email;
+  // let email = body.email;
 
-  let user = await UserModel.find({
-    email: email,
-  });
-  user = user[0];
-  console.log(user);
-  let userId = user.userId;
-  let token = user.token;
+  // let user = await UserModel.find({
+  //   email: email,
+  // });
+  // user = user[0];
+  // console.log(user);
+  // let userId = user.userId;
+  // let token = user.token;
+  let token =
+    "1001.f60094bfff22038c6180d69b16c6cf4d.6d7ab047b74ed0c6d11373f4adbb9b6a";
 
+  // axios
+  //   .post(
+  //     `https://cliq.zoho.com/company/${userId}/api/v2/bots/amazontracker/incoming?zapikey=${token}`,
+  //     body
+  //   )
+  //   .then((res) => res.send(res.data))
+  //   .catch((err) => res.send(err));
   axios
     .post(
-      `https://cliq.zoho.com/company/${userId}/api/v2/bots/amazontracker/incoming?zapikey=${token}`,
+      `https://cliq.zoho.com/api/v2/applications/5223/incoming?appkey=NTIyMy0yNDAxZDViMi02YTVhLTQyZGUtOWNhYy1hNDc0NDg2NzU5M2Q=&zapikey=${token}`,
       body
     )
-    .then((res) => res.send(res.data))
+    .then((result) => res.send(result.data))
     .catch((err) => res.send(err));
 });
 

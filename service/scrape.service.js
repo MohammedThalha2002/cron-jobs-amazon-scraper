@@ -90,8 +90,14 @@ async function notifyUser(body) {
       `https://cliq.zoho.com/company/${userId}/api/v2/bots/amazontracker/incoming?zapikey=${token}`,
       body
     )
-    .then((res) => console.log(res.data))
-    .catch((err) => console.log(err?.response?.data));
+    .then((res) => {
+      console.log(res.data);
+      console.log("Notified the user on price drop");
+    })
+    .catch((err) => {
+      console.log(err?.response?.data);
+      console.log("Failed to notify the user");
+    });
 }
 
 module.exports = { scrape };

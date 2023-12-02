@@ -5,6 +5,26 @@ const TrackSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  title: {
+    type: String,
+    required: true,
+  },
+  features: {
+    type: String,
+    required: true,
+  },
+  imgUrl: {
+    type: String,
+    required: true,
+  },
+  inStock: {
+    type: Boolean,
+    required: true,
+  },
+  rating: {
+    type: Number,
+    required: true,
+  },
   exp_price: {
     type: Number,
     required: true,
