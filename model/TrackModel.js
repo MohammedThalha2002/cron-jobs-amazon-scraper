@@ -10,7 +10,7 @@ const TrackSchema = mongoose.Schema({
     required: true,
   },
   features: {
-    type: String,
+    type: Array,
     required: true,
   },
   imgUrl: {

@@ -1,10 +1,11 @@
 const TrackModel = require("../model/TrackModel");
-const { scrape } = require("./scrape.service");
+const scrape = require("./scrape.service");
 
-const updateTrackPrices = async () => {
+const updateTrackPrices = async (res) => {
   try {
     const details = await TrackModel.find({});
     await scrape(details);
+    res.send("Scraped");
   } catch (error) {
     console.log(error);
   }

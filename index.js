@@ -1,8 +1,8 @@
 const express = require("express");
-require("./config/db");
 const cors = require("cors");
-const { updateTrackPrices } = require("./service/track.service");
 const { default: axios } = require("axios");
+require("./config/db");
+const { updateTrackPrices } = require("./service/track.service");
 const UserModel = require("./model/UserModel");
 const cron = require("node-cron");
 const router = require("./router/routes");
@@ -29,34 +29,46 @@ app.use(express.json());
 
 app.use("/post", router);
 
-// app.get("/start", (req, res) => {
-//   try {
-//     updateTrackPrices();
-//     res.send("scraped");
-//   } catch (error) {
-//     res.send(error);
-//   }
-// });
+app.get("/start", async (req, res) => {
+  try {
+    await updateTrackPrices(res);
+  } catch (error) {
+    res.send(error);
+  }
+});
 
 app.get("/bot-check", async (req, res) => {
   const body = {
-    url: "https://www.amazon.in/ASUS-Vivobook-i5-1335U-Fingerprint-X1504VA-NJ524WS/dp/B0C1GGJCSF/?_encoding=UTF8&pd_rd_w=V3VK1&content-id=amzn1.sym.523d54b6-5e5c-494d-84b4-ef78b981528e&pf_rd_p=523d54b6-5e5c-494d-84b4-ef78b981528e&pf_rd_r=67K19KTA68HNJYZTM01D&pd_rd_wg=Lrdgr&pd_rd_r=ecfb57cf-a711-4dc9-9389-6952700beaeb&ref_=pd_gw_deals_4s_t1",
-    exp_price: 55000,
-    curr_price: 50000,
+    _id: "656afe4f1cbed8039eb09ed4",
+    url: "https://www.amazon.in/boAt-Rockerz-245-Pro-Interface/dp/B0CC8SBFFR/ref=sr_1_5?crid=9G5BMKWGINVB&keywords=neckband%2Bearphones&qid=1701510020&sprefix=neckan%2Caps%2C319&sr=8-5&th=1",
+    title:
+      "boAt Rockerz 245 v2 Pro Wireless Neckband with Up to 30 hrs Playtime",
+    features: [
+      "Long Playtime: Watch your comfort movies and web series on repeat with the boAt Rockerz 245V2 Pro Neckband Earphones. Lending up to 30 hours of performance, these earphones are the perfect audio accessory for heightened relaxation.",
+      "boAt Signature Sound: Engage yourself in rich bass and high treble while grooving to the latest tracks in your car or at the gym or cafe. Powerful 10 mm drivers pump out balanced boAt Signature Sound, making these earphones a delight for music lovers.",
+    ],
+    imgUrl:
+      "https://m.media-amazon.com/images/I/41LFgylW-WL._SX300_SY300_QL70_ML2_.jpg",
+    inStock: true,
+    rating: 3.9,
+    exp_price: 1002,
+    curr_price: 1098,
     email: "mohammedthalha2209@gmail.com",
+    __v: 0,
+    track_enabled: true,
   };
 
-  // let email = body.email;
+  let email = body.email;
 
-  // let user = await UserModel.find({
-  //   email: email,
-  // });
-  // user = user[0];
-  // console.log(user);
-  // let userId = user.userId;
-  // let token = user.token;
-  let token =
-    "1001.f60094bfff22038c6180d69b16c6cf4d.6d7ab047b74ed0c6d11373f4adbb9b6a";
+  let user = await UserModel.find({
+    email: email,
+  });
+  user = user[0];
+  console.log(user);
+  let userId = user.userId;
+  let token = user.token;
+  // let token =
+  //   "1001.f60094bfff22038c6180d69b16c6cf4d.6d7ab047b74ed0c6d11373f4adbb9b6a";
 
   // axios
   //   .post(
@@ -65,11 +77,9 @@ app.get("/bot-check", async (req, res) => {
   //   )
   //   .then((res) => res.send(res.data))
   //   .catch((err) => res.send(err));
-  axios
-    .post(
-      `https://cliq.zoho.com/api/v2/applications/5223/incoming?appkey=NTIyMy0yNDAxZDViMi02YTVhLTQyZGUtOWNhYy1hNDc0NDg2NzU5M2Q=&zapikey=${token}`,
-      body
-    )
+  const sandbox = `https://cliq.zoho.com/company/${userId}/api/v2/applications/2305843009213699174/incoming?appkey=sbx-NTIyMy0yNDAxZDViMi02YTVhLTQyZGUtOWNhYy1hNDc0NDg2NzU5M2Q=`;
+  await axios
+    .post(`${sandbox}&zapikey=${token}`, body)
     .then((result) => res.send(result.data))
     .catch((err) => res.send(err));
 });
